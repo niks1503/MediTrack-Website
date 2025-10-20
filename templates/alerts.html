@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expiry Alerts - MediTrack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .badge {
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card-icon {
+            font-size: 32px;
+        }
+
+        .alert-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alert-icon {
+            font-size: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .days-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .days-critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .days-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .success-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #059669;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <h1>💊 MediTrack</h1>
+            <div class="nav-links">
+                <a href="home.html">🏠 Home</a>
+                <a href="add_medicine.html">➕ Add Medicine</a>
+                <a href="list_medicines.html">📋 All Medicines</a>
+                <a href="alerts.html" class="active">⚠️ Alerts</a>
+            </div>
+            <span class="badge" id="alertBadge" style="display: none;"></span>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">⚠️</div>
+                <h2>Medicine Expiry Alerts</h2>
+            </div>
+
+            <div id="alertContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        function loadAlerts() {
+            const medicines = JSON.parse(localStorage.getItem('medicines') || '[]');
+            const container = document.getElementById('alertContainer');
+            const alertBadge = document.getElementById('alertBadge');
+            const today = new Date();
+            const alertDays = 30; // Show alerts for medicines expiring within 30 days
+            
+            const expiringMedicines = medicines.filter(medicine => {
+                const expiryDate = new Date(medicine.expiry_date);
+                const daysLeft = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                return daysLeft <= alertDays && daysLeft >= 0;
+            });
+
+            if (expiringMedicines.length === 0) {
+                container.innerHTML = `
+                    <div class="success-state">
+                        <div class="success-icon">✅</div>
+                        <h3>No Alerts</h3>
+                        <p>Your medicine inventory is in good condition</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Show badge
+            alertBadge.textContent = `${expiringMedicines.length} Alert(s)`;
+            alertBadge.style.display = 'inline-block';
+
+            let html = `
+                <div class="alert-box">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <strong>Attention Required!</strong><br>
+                        ${expiringMedicines.length} medicine(s) expiring within ${alertDays} days
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Medicine Name</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Batch No.</th>
+                            <th>Expiry Date</th>
+                            <th>Days Remaining</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            expiringMedicines.forEach(medicine => {
+                const expiryDate = new Date(medicine.expiry_date);
+                const daysLeft = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                const badgeClass = daysLeft <= 7 ? 'days-critical' : 'days-warning';
+
+                html += `
+                    <tr>
+                        <td><strong>${medicine.name}</strong></td>
+                        <td>${medicine.category}</td>
+                        <td>${medicine.quantity} units</td>
+                        <td>${medicine.batch_number || 'N/A'}</td>
+                        <td>${medicine.expiry_date}</td>
+                        <td><span class="days-badge ${badgeClass}">${daysLeft} days</span></td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Load alerts on page load
+        loadAlerts();
+    </script>
+</body>
+</html>
