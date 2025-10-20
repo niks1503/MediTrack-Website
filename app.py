@@ -47,7 +47,7 @@ def get_dashboard_stats():
 @app.route('/')
 def home():
     stats = get_dashboard_stats()
-    return render_template('index.html', stats=stats)
+    return render_template('home.html', stats=stats)
 
 @app.route('/add', methods=['GET', 'POST'])
 def add_medicine():
