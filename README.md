@@ -53,6 +53,9 @@ You will need to have [Python 3](https://www.python.org/downloads/) and `pip` (t
     *(This project does not include a `requirements.txt` file, so the primary dependency is listed below.)*
     ```bash
     pip install Flask
+    pip install Flask-SQLAlchemy
+    pip install Flask-Login
+    pip install Werkzeug
     ```
 
 4.  **Initialize the database:**
