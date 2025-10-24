@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-shopping-cart"></i> Sales History</h2>
+    <a href="{{ url_for('medicines') }}" class="btn btn-primary">
+        <i class="fas fa-arrow-left"></i> Back to Medicines
+    </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Total Sales</h5>
+                <h2 class="card-text">₹{{ "%.2f"|format(total_sales) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Today's Sales</h5>
+                <h2 class="card-text">₹{{ "%.2f"|format(today_sales) }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if sales %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Medicine</th>
+                        <th>Batch No.</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total Amount</th>
+                        <th>Customer</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr>
+                        <td>{{ sale.sale_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ sale.medicine.name }}</td>
+                        <td>{{ sale.medicine.batch_number }}</td>
+                        <td>{{ sale.quantity }}</td>
+                        <td>₹{{ "%.2f"|format(sale.sale_price) }}</td>
+                        <td><strong>₹{{ "%.2f"|format(sale.total_amount) }}</strong></td>
+                        <td>{{ sale.customer_name or '-' }}</td>
+                        <td>{{ sale.notes or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No sales records found.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

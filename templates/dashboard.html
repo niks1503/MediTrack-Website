@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('add_medicine') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Add Medicine
+        </a>
+        <a href="{{ url_for('medicines') }}" class="btn btn-primary">
+            <i class="fas fa-list"></i> View All Medicines
+        </a>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Medicines</h5>
+                <h2 class="card-text">{{ total_medicines }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Expiring Soon</h5>
+                <h2 class="card-text">{{ expiring_medicines|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <h5 class="card-title">Low Stock</h5>
+                <h2 class="card-text">{{ low_stock_medicines|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-secondary">
+            <div class="card-body">
+                <h5 class="card-title">Expired</h5>
+                <h2 class="card-text">{{ expired_medicines }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Expiring Soon (Within 30 days)</h5>
+            </div>
+            <div class="card-body">
+                {% if expiring_medicines %}
+                    <div class="list-group">
+                        {% for medicine in expiring_medicines %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ medicine.name }}</h6>
+                                <small>Expires: {{ medicine.expiry_date }}</small>
+                            </div>
+                            <p class="mb-1">Batch: {{ medicine.batch_number }}</p>
+                            <small>Quantity: {{ medicine.quantity }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No medicines expiring soon.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="fas fa-exclamation-circle"></i> Low Stock Alerts</h5>
+            </div>
+            <div class="card-body">
+                {% if low_stock_medicines %}
+                    <div class="list-group">
+                        {% for medicine in low_stock_medicines %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ medicine.name }}</h6>
+                                <small class="text-danger">Low Stock!</small>
+                            </div>
+                            <p class="mb-1">Current: {{ medicine.quantity }} | Alert: {{ medicine.low_stock_alert }}</p>
+                            <small>Batch: {{ medicine.batch_number }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No low stock alerts.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 
+# Add these cards to your existing dashboard row
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Medicines</h5>
+                <h2 class="card-text">{{ total_medicines }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Stock Value</h5>
+                <h2 class="card-text">${{ "%.2f"|format(total_stock_value) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Today's Sales</h5>
+                <h2 class="card-text">${{ "%.2f"|format(today_sales) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Expiring Soon</h5>
+                <h2 class="card-text">{{ expiring_medicines|length }}</h2>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<!-- In the stock value and sales cards, change $ to ₹ -->
+<!-- In the stock value and sales cards, change $ to ₹ -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Medicines</h5>
+                <h2 class="card-text">{{ total_medicines }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Stock Value</h5>
+                <h2 class="card-text">₹{{ "%.2f"|format(total_stock_value) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Today's Sales</h5>
+                <h2 class="card-text">₹{{ "%.2f"|format(today_sales) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Expiring Soon</h5>
+                <h2 class="card-text">{{ expiring_medicines|length }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

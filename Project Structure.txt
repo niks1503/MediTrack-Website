@@ -1,0 +1,17 @@
+medicine_tracker/
+├── app.py
+├── database.py
+├── models.py
+├── templates/
+│   ├── base.html
+│   ├── login.html
+│   ├── signup.html
+│   ├── dashboard.html
+│   ├── add_medicine.html
+│   ├── edit_medicine.html
+│   ├── medicines.html
+│   └── transactions.html
+├── static/
+│   ├── style.css
+│   └── script.js
+└── requirements.txt

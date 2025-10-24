@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-exclamation-triangle"></i> Expired Medicines</h2>
+    <a href="{{ url_for('medicines') }}" class="btn btn-primary">
+        <i class="fas fa-arrow-left"></i> Back to Medicines
+    </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <h5 class="card-title">Total Expired Items</h5>
+                <h2 class="card-text">{{ total_expired_items }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Total Expired Value</h5>
+                <h2 class="card-text">₹{{ "%.2f"|format(total_expired_value) }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if expired_medicines %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Medicine Name</th>
+                        <th>Category</th>
+                        <th>Batch No.</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Expiry Date</th>
+                        <th>Original Value</th>
+                        <th>Expired Since</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for medicine in expired_medicines %}
+                    <tr>
+                        <td>{{ medicine.name }}</td>
+                        <td>
+                            <span class="badge bg-secondary">{{ medicine.category|title }}</span>
+                        </td>
+                        <td>{{ medicine.batch_number }}</td>
+                        <td>
+                            <span class="badge bg-danger">{{ medicine.quantity }}</span>
+                        </td>
+                        <td>₹{{ "%.2f"|format(medicine.price) }}</td>
+                        <td>
+                            <span class="badge bg-secondary">{{ medicine.expiry_date }}</span>
+                        </td>
+                        <td><strong>₹{{ "%.2f"|format(medicine.original_value) }}</strong></td>
+                        <td>{{ medicine.expired_at.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+            <p class="text-muted">No expired medicines found. Great job!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

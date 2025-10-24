@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-cash-register"></i> Sell Medicine</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Medicine Details</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Name:</strong> {{ medicine.name }}</p>
+                            <p><strong>Batch Number:</strong> {{ medicine.batch_number }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Available Quantity:</strong> {{ medicine.quantity }}</p>
+                            <p><strong>Price per Unit:</strong> ₹{{ "%.2f"|format(medicine.price) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Quantity to Sell *</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" 
+                                       min="1" max="{{ medicine.quantity }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="sale_price" class="form-label">Sale Price per Unit</label>
+                                <input type="number" step="0.01" class="form-control" id="sale_price" 
+                                       name="sale_price" value="{{ medicine.price }}" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="customer_name" class="form-label">Customer Name (Optional)</label>
+                        <input type="text" class="form-control" id="customer_name" name="customer_name">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes (Optional)</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <strong>Total Amount: ₹<span id="totalAmount">0.00</span></strong>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Sell Medicine</button>
+                        <a href="{{ url_for('medicines') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateTotal() {
+        const quantity = parseInt(document.getElementById('quantity').value) || 0;
+        const price = parseFloat(document.getElementById('sale_price').value) || 0;
+        const total = quantity * price;
+        document.getElementById('totalAmount').textContent = total.toFixed(2);
+    }
+
+    document.getElementById('quantity').addEventListener('input', calculateTotal);
+    document.getElementById('sale_price').addEventListener('input', calculateTotal);
+    
+    // Calculate initial total
+    calculateTotal();
+</script>
+{% endblock %}
